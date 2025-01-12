@@ -116,6 +116,8 @@ figure;imshow(mcc_wb)
 
 
 
+%%%%%%%%%    Lab 2 from here    %%%%%%%%%
+
 
 %% Step 2 -  Calculate the XYZ and xy values of the Macbeth ColorChecker and plot on the chromaticity diagram
 % XYZ and xy require us to use the standard observer curves.
