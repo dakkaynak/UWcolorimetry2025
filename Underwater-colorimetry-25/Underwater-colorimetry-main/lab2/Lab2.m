@@ -28,7 +28,7 @@ clear all; close all; clc;
 % Reflectance of the color chart
 refl = importdata('data/MacbethColorCheckerReflectances.csv');
 
-% Caneras sensitivities
+% Cameras sensitivities
 nikon = importdata('data/Nikon_D90.csv');
 canon = importdata('data/Canon_1Ds-Mk-II.csv');
 
@@ -60,7 +60,7 @@ plot(rgb_canon(:,1),'*')
 title('R channel')
 legend('Nikon data','Canon data')
 xlabel('Patch #')
-ylabel('Intesnsity')
+ylabel('Intensity')
 
 % Green channel
 subplot(3,1,2)
@@ -70,7 +70,7 @@ plot(rgb_canon(:,2),'*')
 title('G channel')
 legend('Nikon data','Canon data')
 xlabel('Patch #')
-ylabel('Intesnsity')
+ylabel('Intensity')
 
 % Blue channel
 subplot(3,1,3)
@@ -80,7 +80,7 @@ plot(rgb_canon(:,3),'*')
 title('B channel')
 legend('Nikon data','Canon data')
 xlabel('Patch #')
-ylabel('Intesnsity')
+ylabel('Intensity')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -209,7 +209,7 @@ plot(sRGB_canon(:,1),'*')
 title('R channel')
 legend('Nikon data','Canon data')
 xlabel('Patch #')
-ylabel('Intesnsity')
+ylabel('Intensity')
 
 % Green channel
 subplot(3,1,2)
@@ -219,7 +219,7 @@ plot(sRGB_canon(:,2),'*')
 title('G channel')
 legend('Nikon data','Canon data')
 xlabel('Patch #')
-ylabel('Intesnsity')
+ylabel('Intensity')
 
 % Blue channel
 subplot(3,1,3)
@@ -229,7 +229,7 @@ plot(sRGB_canon(:,3),'*')
 title('B channel')
 legend('Nikon data','Canon data')
 xlabel('Patch #')
-ylabel('Intesnsity')
+ylabel('Intensity')
 
 
 
