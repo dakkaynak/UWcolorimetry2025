@@ -51,15 +51,22 @@ light_D65 = importdata('Data/illuminant-D65.csv');
 % Interpolate data to wavelength range  
 light_spectra_D65 = interp1(light_D65.data(:,1),light_D65.data(:,2),WL);
 
-Water_Type = 2;
+
+% Scaling
+RGB_scale = get_UW_radiance(Refl_spectra_DGK.data(:,2:end)', light_spectra_D65, Kd, 0, c, 0, b, Cannon_Sc.data(:,2:end));
+white_scaling_value = RGB_scale(3,:);
+
+
+% Simulating DGK color chart
+Water_Type = 7;
 Kd = Jerlov_Kd(:,Water_Type);
 c = Jerlov_c(:,Water_Type);
 b = Jerlov_b(:,Water_Type);
 
-Depth = 15;
-Distance = 100;
+Depth = 2;
+Distance = 0.8;
 
 RGB = get_UW_radiance(Refl_spectra_DGK.data(:,2:end)', light_spectra_D65, Kd, Depth, c, Distance, b, Cannon_Sc.data(:,2:end));
-
-mcc = visualizeDGK(mat2gray(RGB));
+Ic = RGB./white_scaling_value;
+mcc = visualizeDGK(mat2gray(Ic));
 imshow(2*mcc)
