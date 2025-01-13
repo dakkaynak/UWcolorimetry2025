@@ -13,17 +13,21 @@
 
 %  LAB 4:  
 %        Exercise 1: Simulating DGK color chart underwater.
-%        Exercise 2: Optical comparison of different water types (Jerlov).
-%        Exercise 3: Predict visibility range for a given water type.
-%        Exercise 4: 
+%        Exercise 2: Direct signal (Dc) and Backscatter (Bc).
+%        Exercise 3: Optical comparison of different water types (Jerlov).
+%        Exercise 4: RGB's (Ic) as function of viewing distance (z).
 
 
-clear all; close all; clc; 
+
+
 
 
 
 
 %% Load the required data.
+
+clear all; close all; clc; 
+
 
 % Wavelength range: 400-700[nm]
 WL = 400:10:700;
@@ -54,15 +58,16 @@ light_spectra_D65 = interp1(light_D65.data(:,1),light_D65.data(:,2),WL);
 
 
 
+
 %% Exercise 1: Simulating DGK color chart underwater
 
-% Scaling parameters
-RGB_scale = get_UW_radiance(Refl_spectra_DGK.data(:,2:end)', light_spectra_D65, Kd, 0, c, 0, b, Cannon_Sc.data(:,2:end));
-white_scaling_value = RGB_scale(3,:);
-
-
 % Set specific water type: 1 is the clearest, 8 is the most turbid.
-Water_Type = 1;
+Water_Type = 3;
+% Vertical depth D: color chart depth below the sea surface
+Depth = 5;
+% Viewing distance z: distance between the observer and color chart
+Distance = 10;
+
 
 
 % Spectral attenuation coefficients for the choosen water type.
@@ -74,31 +79,68 @@ c = Jerlov_c(:,Water_Type);
 b = Jerlov_b(:,Water_Type);
 
 
-% Vertical depth D: color chart below the sea surface
-Depth = 5;
+% Scaling parameters
+% D = 0
+% z = 0
+RGB_scale = get_UW_radiance(Refl_spectra_DGK.data(:,2:end)', light_spectra_D65, Kd, 0, c, 0, b, Cannon_Sc.data(:,2:end));
+white_scaling_value = RGB_scale(3,:);
 
-
-% Viewing distance z: distance between the observer and color chart
-Distance = 2;
 
 
 % Simulating RGB values given water type and viewing geometry
-RGB = get_UW_radiance(Refl_spectra_DGK.data(:,2:end)', light_spectra_D65, Kd, Depth, c, Distance, b, Cannon_Sc.data(:,2:end));
+[Ic, Dc, Bc] = get_UW_radiance(Refl_spectra_DGK.data(:,2:end)', light_spectra_D65, Kd, Depth, c, Distance, b, Cannon_Sc.data(:,2:end));
 
 % Scaling the simulated RGB values
-Ic = RGB./white_scaling_value;
-
-% Displying the image
-mcc = visualizeDGK(mat2gray(Ic));
-imshow(2*mcc)
+Ic_scaled = Ic./white_scaling_value;
 
 
 
-%% Exercise 2: Comparing the 8 different Jerlov water types
+figure;
+imshow(visualizeDGK(mat2gray(Ic_scaled)))
+
+
+% Create the formatted title
+formattedTitle = sprintf('Simulated image of DGK color chart at depth %d[m] viewed from distance %d[m] away', Depth, Distance);
+title(formattedTitle);
+
+% Add the subtitle using text
+subtitleText = sprintf('Water type is: Jerlov %d', Water_Type);
+text(0.5, -0.05, subtitleText, 'Units', 'normalized', 'HorizontalAlignment', 'center', 'FontSize', 20);
+
+
+
+
+
+
+%% Exercise 2: Direct signal (Dc) and Backscatter (Bc)
+
+
+figure;
+Dc_scaled = Dc./white_scaling_value;
+montage({visualizeDGK(mat2gray(Ic_scaled)), visualizeDGK(mat2gray(Dc_scaled))})
+
+
+% Create the formatted title
+formattedTitle = sprintf('Top image with backscatter - Bottom image without backscatter');
+title(formattedTitle);
+
+% Add the subtitle using text
+subtitleText = sprintf('Water type is: Jerlov %d, Depth = %d[m], Viewing distance = %d[m]', Water_Type, Depth, Distance);
+text(0.5, -0.05, subtitleText, 'Units', 'normalized', 'HorizontalAlignment', 'center', 'FontSize', 15);
+
+
+
+
+
+
+%% Exercise 3: Comparing the 8 different Jerlov water types
 % Initialize an image array to store the 8 images
 % Use a cell array for storing the images
 CC_array = cell(1, 8); 
 
+
+
+% Total signal (Ic) and Direc signal (Dc) comparison in different water types
 for i = 1:8
     Water_Type = i;
 
@@ -112,29 +154,31 @@ for i = 1:8
     CompDistance = 2;
 
     % Compute the underwater radiance
-    RGB = get_UW_radiance(Refl_spectra_DGK.data(:, 2:end)', light_spectra_D65, Kd, CompDepth, c, CompDistance, b, Cannon_Sc.data(:, 2:end));
+    [Ic, Dc, Bc] = get_UW_radiance(Refl_spectra_DGK.data(:, 2:end)', light_spectra_D65, Kd, CompDepth, c, CompDistance, b, Cannon_Sc.data(:, 2:end));
 
     % Normalize the radiance values
-    Ic = RGB ./ white_scaling_value;
+    Ic_scaled = Ic./ white_scaling_value;
+    Dc_scaled = Dc./ white_scaling_value;
 
     % Visualize and store the resulting image in the array
-    CC_array{i} = visualizeDGK(mat2gray(Ic)); % Store the image in the cell array
+    Ic_array{i} = visualizeDGK(mat2gray(Ic_scaled)); 
+    Dc_array{i} = visualizeDGK(mat2gray(Dc_scaled)); 
 end
 
 % Convert the cell array to a 4D array for montage
-CC_montage = cat(4, CC_array{:});
+Ic_montage = cat(4, Ic_array{:});
+Dc_montage = cat(4, Dc_array{:});
 
-% Display the 8 images in 2 rows and 4 columns using montage
+
+% Display the total signal Ic
 figure;
-montage(CC_montage, 'Size', [2 4]); % Specify 2 rows and 4 columns
-title('Optical comparsion of 8 water types from Jerlovs data-set');
+montage(Ic_montage, 'Size', [2 4]); 
+title('Comparsion of Ic in 8 optically different water types from Jerlovs data-set');
 
-
-
-
-
-
-%% Exercise 3: Predict visibility range for a given water type
+% Display the total signal Dc
+figure;
+montage(Dc_montage, 'Size', [2 4]); 
+title('Comparsion of Dc in 8 optically different water types from Jerlovs data-set');
 
 
 
@@ -142,5 +186,14 @@ title('Optical comparsion of 8 water types from Jerlovs data-set');
 
 
 
-%% Exercise 4:  
+%% Exercise 4: RGB's (Dc, Bc) as function of viewing distance (z)
+
+figure;
+hold on
+for z = 0:50
+    [Ic, Dc, Bc] = get_UW_radiance(Refl_spectra_DGK.data(:, 2:end)', light_spectra_D65, Kd, Depth, c, z, b, Cannon_Sc.data(:, 2:end));
+    plot()
+end
+
+
 

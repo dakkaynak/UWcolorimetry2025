@@ -1,4 +1,4 @@
-function Ic = get_UW_radiance(reflectance, light, Kd, D, c, z, b, observer)
+function [Ic, Dc, Bc] = get_UW_radiance(reflectance, light, Kd, D, c, z, b, observer)
 
 % This function calculates radiance from given reflectance, light, and
 % observer spectra.
