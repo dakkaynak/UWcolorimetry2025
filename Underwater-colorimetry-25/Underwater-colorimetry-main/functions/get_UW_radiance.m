@@ -18,6 +18,6 @@ s = size(reflectance);
 
 Dc = (reflectance .* repmat(light,[s(1) 1]))*diag(exp(-Kd*D))*diag(exp(-c*z))*observer;
 Bc = ((b./c)').*(light.*exp(-Kd*D)').*(1 - exp(-c*z)')*observer;
-
+Bc_scaled = Bc./Dc(1,:);
 % UW_radiance = (reflectance .* repmat(light,[s(1) 1])) * observer;
-UW_radiance = Dc + Bc;
+UW_radiance = Dc + Bc_scaled;

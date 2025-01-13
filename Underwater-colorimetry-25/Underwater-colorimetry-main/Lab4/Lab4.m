@@ -51,13 +51,13 @@ light_D65 = importdata('Data/illuminant-D65.csv');
 % Interpolate data to wavelength range  
 light_spectra_D65 = interp1(light_D65.data(:,1),light_D65.data(:,2),WL);
 
+Water_Type = 2;
+Kd = Jerlov_Kd(:,Water_Type);
+c = Jerlov_c(:,Water_Type);
+b = Jerlov_b(:,Water_Type);
 
-Kd = Jerlov_Kd(:,3);
-c = Jerlov_c(:,3);
-b = Jerlov_b(:,3);
-
-Depth = 1;
-Distance = 10;
+Depth = 15;
+Distance = 100;
 
 RGB = get_UW_radiance(Refl_spectra_DGK.data(:,2:end)', light_spectra_D65, Kd, Depth, c, Distance, b, Cannon_Sc.data(:,2:end));
 
