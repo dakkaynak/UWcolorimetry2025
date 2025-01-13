@@ -62,7 +62,7 @@ Illuminant_D65 = importdata('data/illuminant-D65.csv');
 Illuminant_D65.data(:,1)
 
 % Uploading illuminant-A as: Illuminant_A
-Illuminant_A = importdata('data/illuminant-D65.csv');
+Illuminant_A = importdata('data/illuminant-A.csv');
 Illuminant_A.data(:,1);
 
 
@@ -91,19 +91,21 @@ light_spectra_A = interp1(Illuminant_A.data(:,1),Illuminant_A.data(:,2),WL);
 light_spectra = [light_spectra_D65; light_spectra_A];
 
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Calculate radiance for the ColorChecker %%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % This calculation is for a given illuminant and a given camera!!!
-% for illuminant-D65 use: light_spectra(:,1).
-% for illuminant-D65 use: light_spectra(:,2).
+% for illuminant-D65 use: light_spectra(1,:).
+% for illuminant-A use: light_spectra(2,:).
 rgb = getradiance(refl_spectra, light_spectra(1,:), cam.data(:,2:end));
 
 % Visualize the resulting colors
 mcc = visualizeColorChecker(mat2gray(rgb));
-figure;imshow(mcc)
 
+% figure;imshow(mcc)
 % This line saves the figure
 % saveas(gcf,'data/Macbeth_no_wb.png');
 
@@ -119,9 +121,19 @@ rgb_wb = 0.09*rgb./repmat(wbpatch,[size(rgb,1),1]);
 mcc_wb = visualizeColorChecker(rgb_wb);
 
 % Display and save the resulting image
-figure;imshow(mcc_wb)
-% This line saves the figure
-%saveas(gcf,'data/Macbeth_wb.png');
+figure;
+montage({mcc, mcc_wb}, 'BorderSize', [0 20], 'BackgroundColor', [0.9 0.9 0.9])
+
+
+
+% Saving the figures:
+% This line saves the figure, change the image name as you see fit
+
+% Remember to change name when changing illuminant !!!!
+
+save_path = 'change_to_your_path';
+saveas(gcf, fullfile(save_path, 'Macbeth_sim.png'));
+fprintf('Figure saved to %s\n', fullfile(save_path, 'Macbeth_sim.png'));
 
 % You should end up with 4 figures of combinations of Illuminant A and D65
 % as well as the Nikon and Canon camera. 

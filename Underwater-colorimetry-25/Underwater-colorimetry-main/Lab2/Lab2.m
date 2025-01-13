@@ -11,7 +11,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%  LAB2:  
+%  LAB 2:  
 %           Exercise 1: Quantitative color comparison 
 %           Exercise 2: RGB to XYZ transformation
 %           Exercise 3: xy white point coordinates
@@ -156,6 +156,7 @@ xy_image_nikon = xyz_image_nikon./sum(xyz_image_nikon,2);
 
 
  %%%%%%%%%%%%%%%%%% plots %%%%%%%%%%%%%%%%%%
+ figure;
  plotChromaticity
  hold on
  plot(xy_image_nikon(:,1),xy_image_nikon(:,2),'go','linewidth',3)

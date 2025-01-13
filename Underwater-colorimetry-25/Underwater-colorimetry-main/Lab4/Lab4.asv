@@ -56,8 +56,8 @@ Kd = Jerlov_Kd(:,3);
 c = Jerlov_c(:,3);
 b = Jerlov_b(:,3);
 
-Depth = 1;
-Distance = 10;
+Depth = 10;
+Distance = 8;
 
 RGB = get_UW_radiance(Refl_spectra_DGK.data(:,2:end)', light_spectra_D65, Kd, Depth, c, Distance, b, Cannon_Sc.data(:,2:end));
 
