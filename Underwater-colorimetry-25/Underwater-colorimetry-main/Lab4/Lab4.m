@@ -12,10 +12,10 @@
 
 
 %  LAB 4:  
-%           Exercise 1: Quantitative color comparison 
-%           Exercise 2: RGB to XYZ transformation
-%           Exercise 3: xy white point coordinates
-%           Exercise 4: XYZ to Standard RGB transformation
+%           Exercise 1: 
+%           Exercise 2: 
+%           Exercise 3: 
+%           Exercise 4: 
 
 
 clear all; close all; clc; 
