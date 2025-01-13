@@ -55,12 +55,15 @@ cam.data(:,1)
 %%% Load the light data %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-light = importdata('data/illuminant-D65.csv');
+
+% Uploading illuminant-D65 as: Illuminant_D65
+Illuminant_D65 = importdata('data/illuminant-D65.csv');
 % Inspect the wavelength ranges. This dataset is 300:5:830 nm.
-light.data(:,1)
+Illuminant_D65.data(:,1)
 
-% Don't forget to also load the second illuminant!
-
+% Uploading illuminant-A as: Illuminant_A
+Illuminant_A = importdata('data/illuminant-D65.csv');
+Illuminant_A.data(:,1);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -74,9 +77,18 @@ light.data(:,1)
 
 WL = 400:10:700;
 refl_spectra = (interp1(refl.data(1,:)',refl.data(2:end,:)',WL))';
-% Interpolate values for light
-light_spectra = interp1(light.data(:,1),light.data(:,2),WL);
 
+
+% Interpolate values for light
+
+% Illuminant-D65
+light_spectra_D65 = interp1(Illuminant_D65.data(:,1),Illuminant_D65.data(:,2),WL);
+
+% Illuminant-A
+light_spectra_A = interp1(Illuminant_A.data(:,1),Illuminant_A.data(:,2),WL);
+
+% Both illuminants D-65 and A.
+light_spectra = [light_spectra_D65; light_spectra_A];
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -84,8 +96,9 @@ light_spectra = interp1(light.data(:,1),light.data(:,2),WL);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % This calculation is for a given illuminant and a given camera!!!
-
-rgb = getradiance(refl_spectra, light_spectra, cam.data(:,2:end));
+% for illuminant-D65 use: light_spectra(:,1).
+% for illuminant-D65 use: light_spectra(:,2).
+rgb = getradiance(refl_spectra, light_spectra(1,:), cam.data(:,2:end));
 
 % Visualize the resulting colors
 mcc = visualizeColorChecker(mat2gray(rgb));
