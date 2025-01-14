@@ -24,7 +24,7 @@
 
 
 
-%% Load the required data.
+%% Load the required data
 
 clear all; close all; clc; 
 
@@ -89,31 +89,60 @@ white_scaling_value = RGB_scale(3,:);
 
 % Simulating RGB values given water type and viewing geometry
 [Ic, Dc, Bc] = get_UW_radiance(Refl_spectra_DGK.data(:,2:end)', light_spectra_D65, Kd, Depth, c, Distance, b, Cannon_Sc.data(:,2:end));
+[IcRef, DcRef, BcRef] = get_UW_radiance(Refl_spectra_DGK.data(:,2:end)', light_spectra_D65, Kd, 0, c, 0, b, Cannon_Sc.data(:,2:end));
 
 % Scaling the simulated RGB values
 Ic_scaled = Ic./white_scaling_value;
+IcRef_scaled = IcRef./white_scaling_value;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Reference image at the surface %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure;
+imshow(visualizeDGK(mat2gray(IcRef_scaled)))
+formattedTitle = sprintf('Simulated reference image of DGK color chart');
+title(formattedTitle, 'FontSize', 18);
+subtitleText = sprintf('Depth and viewing distance are equal to zero');
+text(0.5, -0.05, subtitleText, 'Units', 'normalized', 'HorizontalAlignment', 'center', 'FontSize', 20);
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Underwater image %%%
+%%%%%%%%%%%%%%%%%%%%%%%%
 figure;
 imshow(visualizeDGK(mat2gray(Ic_scaled)))
-
-
-% Create the formatted title
 formattedTitle = sprintf('Simulated image of DGK color chart at depth %d[m] viewed from distance %d[m] away', Depth, Distance);
-title(formattedTitle);
-
-% Add the subtitle using text
+title(formattedTitle, 'FontSize', 18);
 subtitleText = sprintf('Water type is: Jerlov %d', Water_Type);
 text(0.5, -0.05, subtitleText, 'Units', 'normalized', 'HorizontalAlignment', 'center', 'FontSize', 20);
 
 
+%%%%%%%%%%%%%%%%
+%%% Kd and c %%%
+%%%%%%%%%%%%%%%%
+figure;
+set(gcf, 'Color', 'w');
+
+subplot(1, 2, 1)
+plot(WL, Kd, 'o--', 'LineWidth', 2)
+xlabel('$\mathrm{\lambda\ [nm]}$', 'Interpreter', 'latex', 'FontSize', 18)
+ylabel('$\mathrm{Attenuation\ [m^{-1}]}$', 'Interpreter', 'latex', 'FontSize', 18)
+title('$\mathrm{Diffuse\ downwelling\ attenuation\ coefficient\ -\ } K_d(\lambda)$', ...
+      'Interpreter', 'latex', 'FontSize', 20)
+set(gca, 'Color', 'w'); % Set axes background to white
+
+subplot(1, 2, 2)
+plot(WL, c, 'o--', 'LineWidth', 2)
+xlabel('$\mathrm{\lambda [nm]}$', 'Interpreter', 'latex', 'FontSize', 18)
+ylabel('$\mathrm{Attenuation\ [m^{-1}]}$', 'Interpreter', 'latex', 'FontSize', 18)
+title('$\mathrm{Beam\ attenuation\ coefficient\ -\ } c(\lambda)$', ...
+      'Interpreter', 'latex', 'FontSize', 20)
+set(gca, 'Color', 'w'); % Set axes background to white
 
 
 
 
 %% Exercise 2: Direct signal (Dc) and Backscatter (Bc)
-
 
 figure;
 Dc_scaled = Dc./white_scaling_value;
@@ -188,11 +217,52 @@ title('Comparsion of Dc in 8 optically different water types from Jerlovs data-s
 
 %% Exercise 4: RGB's (Dc, Bc) as function of viewing distance (z)
 
+% Set parameters
+Water_Type = 2;
+Depth = 5;
+Kd = Jerlov_Kd(:,Water_Type);
+c = Jerlov_c(:,Water_Type);
+b = Jerlov_b(:,Water_Type);
+
+% Experiment with different patches !!!
+patch = 1;
+
+
 figure;
-hold on
 for z = 0:50
     [Ic, Dc, Bc] = get_UW_radiance(Refl_spectra_DGK.data(:, 2:end)', light_spectra_D65, Kd, Depth, c, z, b, Cannon_Sc.data(:, 2:end));
-    plot()
+
+    subplot(3, 1, 1)
+    plot(z, Dc(patch,1), 'xk', 'LineWidth', 2)
+    hold on;
+    plot(z, Bc(1,1), '.m', 'MarkerSize', 12)
+    plot(z, Ic(1,1), 'or', 'LineWidth', 2)
+    legend('Direct signal', 'Backscatter', 'Image signal', 'Location','best', 'FontSize', 14)
+    xlabel('D[m]')
+    ylabel('Pixel Intensity')
+    title('Ic Dc and Bc - Red channel - as function of depth (D)')
+    
+
+    subplot(3, 1, 2)
+    plot(z, Dc(patch,2), 'xk', 'LineWidth', 2)
+    hold on;
+    plot(z, Bc(1,2), '.m', 'MarkerSize', 12)
+    plot(z, Ic(1,2), 'og', 'LineWidth', 2)
+    legend('Direct signal', 'Backscatter', 'Image signal', 'Location','best', 'FontSize', 14)
+    xlabel('D[m]')
+    ylabel('Pixel Intensity')
+    title('Ic Dc and Bc - Green channel - as function of depth (D)')
+    
+
+    subplot(3, 1, 3)
+    plot(z, Dc(patch,3), 'xk', 'LineWidth', 2)
+    hold on;
+    plot(z, Bc(1,3), '.m', 'MarkerSize', 12)
+    plot(z, Ic(1,3), 'ob', 'LineWidth', 2)
+    legend('Direct signal', 'Backscatter', 'Image signal', 'Location','best', 'FontSize', 14)
+    xlabel('D[m]')
+    ylabel('Pixel Intensity')
+    title('Ic Dc and Bc - Blue channel - as function of depth (D)')
 end
 
 

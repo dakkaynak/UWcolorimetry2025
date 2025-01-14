@@ -24,7 +24,7 @@
 
 
 
-%% Load the required data.
+%% Load the required data
 
 clear all; close all; clc; 
 
@@ -89,44 +89,76 @@ white_scaling_value = RGB_scale(3,:);
 
 % Simulating RGB values given water type and viewing geometry
 [Ic, Dc, Bc] = get_UW_radiance(Refl_spectra_DGK.data(:,2:end)', light_spectra_D65, Kd, Depth, c, Distance, b, Cannon_Sc.data(:,2:end));
+[IcRef, DcRef, BcRef] = get_UW_radiance(Refl_spectra_DGK.data(:,2:end)', light_spectra_D65, Kd, 0, c, 0, b, Cannon_Sc.data(:,2:end));
 
 % Scaling the simulated RGB values
 Ic_scaled = Ic./white_scaling_value;
+IcRef_scaled = IcRef./white_scaling_value;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Reference image at the surface %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure;
+imshow(visualizeDGK(mat2gray(IcRef_scaled)))
+formattedTitle = sprintf('Simulated reference image of DGK color chart');
+title(formattedTitle, 'FontSize', 18);
+subtitleText = sprintf('Depth and viewing distance are equal to zero');
+text(0.5, -0.05, subtitleText, 'Units', 'normalized', 'HorizontalAlignment', 'center', 'FontSize', 20);
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Underwater image %%%
+%%%%%%%%%%%%%%%%%%%%%%%%
 figure;
 imshow(visualizeDGK(mat2gray(Ic_scaled)))
-
-
-% Create the formatted title
 formattedTitle = sprintf('Simulated image of DGK color chart at depth %d[m] viewed from distance %d[m] away', Depth, Distance);
-title(formattedTitle);
-
-% Add the subtitle using text
+title(formattedTitle, 'FontSize', 18);
 subtitleText = sprintf('Water type is: Jerlov %d', Water_Type);
 text(0.5, -0.05, subtitleText, 'Units', 'normalized', 'HorizontalAlignment', 'center', 'FontSize', 20);
 
 
+%%%%%%%%%%%%%%%%
+%%% Kd and c %%%
+%%%%%%%%%%%%%%%%
+figure;
+set(gcf, 'Color', 'w');
+
+subplot(1, 2, 1)
+plot(WL, Kd, 'o--', 'LineWidth', 2)
+xlabel('$\mathrm{\lambda\ [nm]}$', 'Interpreter', 'latex', 'FontSize', 18)
+ylabel('$\mathrm{Attenuation\ [m^{-1}]}$', 'Interpreter', 'latex', 'FontSize', 18)
+title('$\mathrm{Diffuse\ downwelling\ attenuation\ coefficient\ -\ } K_d(\lambda)$', ...
+      'Interpreter', 'latex', 'FontSize', 20)
+set(gca, 'Color', 'w'); % Set axes background to white
+
+subplot(1, 2, 2)
+plot(WL, c, 'o--', 'LineWidth', 2)
+xlabel('$\mathrm{\lambda [nm]}$', 'Interpreter', 'latex', 'FontSize', 18)
+ylabel('$\mathrm{Attenuation\ [m^{-1}]}$', 'Interpreter', 'latex', 'FontSize', 18)
+title('$\mathrm{Beam\ attenuation\ coefficient\ -\ } c(\lambda)$', ...
+      'Interpreter', 'latex', 'FontSize', 20)
+set(gca, 'Color', 'w'); % Set axes background to white
 
 
 
 
 %% Exercise 2: Direct signal (Dc) and Backscatter (Bc)
 
-
 figure;
 Dc_scaled = Dc./white_scaling_value;
-montage({visualizeDGK(mat2gray(Ic_scaled)), visualizeDGK(mat2gray(Dc_scaled))})
+montage({visualizeDGK(mat2gray(Ic_scaled)), ... 
+    visualizeDGK(mat2gray(Dc_scaled)), ...
+    visualizeDGK(mat2gray(IcRef_scaled))}, ...
+    'Size', [3 1])
 
 
 % Create the formatted title
-formattedTitle = sprintf('Top image with backscatter - Bottom image without backscatter');
-title(formattedTitle);
+formattedTitle = '$\mathrm{Top\ to\ Bottom:}\ I_c,\ D_c,\ \mathrm{Reference}$';
+title(formattedTitle, 'Interpreter', 'latex', 'FontSize', 20);
 
 % Add the subtitle using text
 subtitleText = sprintf('Water type is: Jerlov %d, Depth = %d[m], Viewing distance = %d[m]', Water_Type, Depth, Distance);
-text(0.5, -0.05, subtitleText, 'Units', 'normalized', 'HorizontalAlignment', 'center', 'FontSize', 15);
+text(0.5, -0.02, subtitleText, 'Units', 'normalized', 'HorizontalAlignment', 'center', 'FontSize', 15);
 
 
 
@@ -173,12 +205,18 @@ Dc_montage = cat(4, Dc_array{:});
 % Display the total signal Ic
 figure;
 montage(Ic_montage, 'Size', [2 4]); 
-title('Comparsion of Ic in 8 optically different water types from Jerlovs data-set');
+title('Comparsion of $I_c$ in 8 optically different water types from Jerlovs data-set', ...
+    'Interpreter', 'latex','FontSize',20);
+text(0.5, -0.05, 'Up left - clearest waters ; Bottom right - most turbid waters', ...
+    'Units', 'normalized', 'HorizontalAlignment', 'center', 'FontSize', 15)
 
 % Display the total signal Dc
 figure;
 montage(Dc_montage, 'Size', [2 4]); 
-title('Comparsion of Dc in 8 optically different water types from Jerlovs data-set');
+title('Comparsion of $D_c$ in 8 optically different water types from Jerlovs data-set', ...
+    'Interpreter', 'latex','FontSize',20);
+text(0.5, -0.05, 'Up left - clearest waters ; Bottom right - most turbid waters', ...
+    'Units', 'normalized', 'HorizontalAlignment', 'center', 'FontSize', 15)
 
 
 
@@ -189,29 +227,65 @@ title('Comparsion of Dc in 8 optically different water types from Jerlovs data-s
 %% Exercise 4: RGB's (Dc, Bc) as function of viewing distance (z)
 
 % Set parameters
-Water_Type = 4;
+Water_Type = 2;
 Depth = 5;
-Kd = Jerlov_Kd(:,Water_Type);
-c = Jerlov_c(:,Water_Type);
-b = Jerlov_b(:,Water_Type);
+Kd = Jerlov_Kd(:, Water_Type);
+c = Jerlov_c(:, Water_Type);
+b = Jerlov_b(:, Water_Type);
 
-% Experiment with different patches !!!
-patch = 10;
+% Experiment with different patches
+patch = 1;
 
-
+% Create figure with white background
 figure;
-hold on;
-for z = 0:0.5:8
+set(gcf, 'Color', 'w');
+
+for z = 0:50
     [Ic, Dc, Bc] = get_UW_radiance(Refl_spectra_DGK.data(:, 2:end)', light_spectra_D65, Kd, Depth, c, z, b, Cannon_Sc.data(:, 2:end));
-    plot(z, Dc(patch,1), 'or', 'LineWidth', 2)
-    plot(z, Dc(patch,2), 'og', 'LineWidth', 2)
-    plot(z, Dc(patch,3), 'ob', 'LineWidth', 2)
-
-
-    plot(z, Bc(1,1), '^r', 'LineWidth', 2)
-    plot(z, Bc(1,2), '^g', 'LineWidth', 2)
-    plot(z, Bc(1,3), '^b', 'LineWidth', 2)
+    
+    % Subplot for Red Channel
+    subplot(3, 1, 1)
+    plot(z, Dc(patch, 1), 'xk', 'LineWidth', 2)
+    hold on;
+    plot(z, Bc(1, 1), '.m', 'MarkerSize', 12)
+    plot(z, Ic(1, 1), 'or', 'LineWidth', 2)
+    legend('$\mathrm{D_c}$', '$\mathrm{B_c}$', '$\mathrm{I_c}$', ...
+           'Interpreter', 'latex', 'Location', 'best', 'FontSize', 14)
+    xlabel('$\mathrm{Depth\ [m]}$', 'Interpreter', 'latex', 'FontSize', 14)
+    ylabel('$\mathrm{Pixel\ Intensity}$', 'Interpreter', 'latex', 'FontSize', 14)
+    title('$\mathrm{I_c,\ D_c,\ and\ B_c\ -\ Red\ channel\ as\ function\ of\ depth\ (D)}$', ...
+          'Interpreter', 'latex', 'FontSize', 16)
+    set(gca, 'Color', 'w'); % Ensure white background for axes
+    
+    % Subplot for Green Channel
+    subplot(3, 1, 2)
+    plot(z, Dc(patch, 2), 'xk', 'LineWidth', 2)
+    hold on;
+    plot(z, Bc(1, 2), '.m', 'MarkerSize', 12)
+    plot(z, Ic(1, 2), 'og', 'LineWidth', 2)
+    legend('$\mathrm{D_c}$', '$\mathrm{B_c}$', '$\mathrm{I_c}$', ...
+           'Interpreter', 'latex', 'Location', 'best', 'FontSize', 14)
+    xlabel('$\mathrm{Depth\ [m]}$', 'Interpreter', 'latex', 'FontSize', 14)
+    ylabel('$\mathrm{Pixel\ Intensity}$', 'Interpreter', 'latex', 'FontSize', 14)
+    title('$\mathrm{I_c,\ D_c,\ and\ B_c\ -\ Green\ channel\ as\ function\ of\ depth\ (D)}$', ...
+          'Interpreter', 'latex', 'FontSize', 16)
+    set(gca, 'Color', 'w'); % Ensure white background for axes
+    
+    % Subplot for Blue Channel
+    subplot(3, 1, 3)
+    plot(z, Dc(patch, 3), 'xk', 'LineWidth', 2)
+    hold on;
+    plot(z, Bc(1, 3), '.m', 'MarkerSize', 12)
+    plot(z, Ic(1, 3), 'ob', 'LineWidth', 2)
+    legend('$\mathrm{D_c}$', '$\mathrm{B_c}$', '$\mathrm{I_c}$', ...
+           'Interpreter', 'latex', 'Location', 'best', 'FontSize', 14)
+    xlabel('$\mathrm{Depth\ [m]}$', 'Interpreter', 'latex', 'FontSize', 14)
+    ylabel('$\mathrm{Pixel\ Intensity}$', 'Interpreter', 'latex', 'FontSize', 14)
+    title('$\mathrm{I_c,\ D_c,\ and\ B_c\ -\ Blue\ channel\ as\ function\ of\ depth\ (D)}$', ...
+          'Interpreter', 'latex', 'FontSize', 16)
+    set(gca, 'Color', 'w'); % Ensure white background for axes
 end
+
 
 
 
