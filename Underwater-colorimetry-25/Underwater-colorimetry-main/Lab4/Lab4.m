@@ -24,7 +24,11 @@
 
 
 
-%% Load the required data
+%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Loading the required data %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear all; close all; clc; 
 
@@ -59,7 +63,11 @@ light_spectra_D65 = interp1(light_D65.data(:,1),light_D65.data(:,2),WL);
 
 
 
-%% Exercise 1: Simulating DGK color chart underwater
+%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Exercise 1: Simulating DGK color chart underwater %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Set specific water type: 1 is the clearest, 8 is the most turbid.
 Water_Type = 3;
@@ -142,7 +150,11 @@ set(gca, 'Color', 'w'); % Set axes background to white
 
 
 
-%% Exercise 2: Direct signal (Dc) and Backscatter (Bc)
+%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Exercise 2: Direct signal (Dc) and Backscatter (Bc) %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 figure;
 Dc_scaled = Dc./white_scaling_value;
@@ -165,7 +177,12 @@ text(0.5, -0.02, subtitleText, 'Units', 'normalized', 'HorizontalAlignment', 'ce
 
 
 
-%% Exercise 3: Comparing the 8 different Jerlov water types
+%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Exercise 3: Comparing the 8 different Jerlov water types %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Initialize an image array to store the 8 images
 % Use a cell array for storing the images
 CC_array = cell(1, 8); 
@@ -224,7 +241,11 @@ text(0.5, -0.05, 'Up left - clearest waters ; Bottom right - most turbid waters'
 
 
 
-%% Exercise 4: RGB's (Dc, Bc) as function of viewing distance (z)
+%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Exercise 4: RGB's (Dc, Bc) as function of viewing distance (z) %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Set parameters
 Water_Type = 2;
